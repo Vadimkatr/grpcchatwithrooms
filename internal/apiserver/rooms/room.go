@@ -14,7 +14,7 @@ type User struct {
 }
 
 type Connection struct {
-	stream pb.Broadcast_CreateStreamServer
+	stream pb.ChatRooms_CreateStreamServer
 	user   *User
 	active bool
 	error  chan error

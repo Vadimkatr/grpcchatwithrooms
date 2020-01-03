@@ -19,7 +19,7 @@ func InitRooms() *Rooms {
 	return &Rooms{}
 }
 
-func (rms *Rooms) CreateConnection(pconn *pb.Connect, stream pb.Broadcast_CreateStreamServer) error {
+func (rms *Rooms) CreateConnection(pconn *pb.Connect, stream pb.ChatRooms_CreateStreamServer) error {
 	user := User{
 		Id:   pconn.User.Id,
 		Name: pconn.User.Name,
@@ -76,7 +76,7 @@ func (rms *Rooms) CreateRoom(name string) (*Room, error) {
 	return rm, nil
 }
 
-func (rms *Rooms) BroadcastMessage(ctx context.Context, msg *pb.Message) (*pb.Close, error) {
+func (rms *Rooms) BroadcastRoomMessage(ctx context.Context, msg *pb.Message) (*pb.Close, error) {
 	wait := sync.Mutex{}
 	rm, err := rms.FindRoomByName(msg.RoomName)
 	if err != nil {

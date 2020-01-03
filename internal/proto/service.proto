@@ -8,10 +8,10 @@ message User {
 }
 
 message Message {
-    string userName = 1;
-    string userId = 2;
-    string roomName = 3;
-    string roomId = 4;
+    string userId = 1;
+    string userName = 2;
+    string roomId = 3;
+    string roomName = 4;
     string content = 5;
     string timestamp = 6;
 }
@@ -21,11 +21,7 @@ message Room {
     string name = 2;
 }
 
-message ConnectToRoomMessage {
-    string roomName = 1;
-}
-
-message CreateRoomMessage {
+message CreateRoom {
     User user = 1;
     string roomName = 2;
 }
@@ -46,9 +42,9 @@ message Empty {
 
 }
 
-service Broadcast {
+service ChatRooms {
     rpc CreateStream(Connect) returns (stream Message);
-    rpc CreateRoom(CreateRoomMessage) returns (Room);
-    rpc BroadcastMessage(Message) returns (Close);
+    rpc CreateNewRoom(CreateRoom) returns (Room);
+    rpc BroadcastRoomMessage(Message) returns (Close);
     rpc GetAllRooms(Empty) returns (ListRoom);
 }

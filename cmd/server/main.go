@@ -21,6 +21,6 @@ func main() {
 	}
 
 	log.Println("Starting server at port :8080")
-	pb.RegisterBroadcastServer(grpcServer, srv)
+	pb.RegisterChatRoomsServer(grpcServer, srv)
 	grpcServer.Serve(listener)
 }

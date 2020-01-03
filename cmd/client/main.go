@@ -17,7 +17,7 @@ import (
 	"os"
 )
 
-var client pb.BroadcastClient
+var client pb.ChatRoomsClient
 var wait *sync.WaitGroup
 
 func init() {
@@ -38,7 +38,7 @@ func main() {
 		log.Fatalf("Couldnt connect to service: %v", err)
 	}
 
-	client = pb.NewBroadcastClient(conn)
+	client = pb.NewChatRoomsClient(conn)
 	user := &pb.User{
 		Id:   hex.EncodeToString(id[:]),
 		Name: *name,
@@ -112,7 +112,7 @@ func main() {
 							Timestamp: timestamp.String(),
 						}
 
-						_, err := client.BroadcastMessage(context.Background(), msg)
+						_, err := client.BroadcastRoomMessage(context.Background(), msg)
 						if err != nil {
 							fmt.Printf("Error Sending Message: %v", err)
 							break
@@ -155,7 +155,7 @@ func createRoom(user *pb.User) (string, error) {
 	}
 	roomName = roomName[:len(roomName)-1]
 
-	rm, err := client.CreateRoom(context.Background(), &pb.CreateRoomMessage{
+	rm, err := client.CreateNewRoom(context.Background(), &pb.CreateRoom{
 		User:     user,
 		RoomName: roomName,
 	})
@@ -196,7 +196,7 @@ func connectToRoom(user *pb.User, roomName string) error {
 	}
 
 	wait.Add(1)
-	go func(str pb.Broadcast_CreateStreamClient) {
+	go func(str pb.ChatRooms_CreateStreamClient) {
 		defer wait.Done()
 
 		for {

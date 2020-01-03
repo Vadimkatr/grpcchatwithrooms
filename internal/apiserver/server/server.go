@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"log"
-	
+
 	"github.com/Vadimkatr/grpcchatwithrooms/internal/apiserver/rooms"
 	pb "github.com/Vadimkatr/grpcchatwithrooms/internal/proto"
 )
@@ -18,7 +18,7 @@ func InitServer() (*Server, error) {
 	}, nil
 }
 
-func (s *Server) CreateRoom(ctx context.Context, pconn *pb.CreateRoomMessage) (*pb.Room, error) {
+func (s *Server) CreateNewRoom(ctx context.Context, pconn *pb.CreateRoom) (*pb.Room, error) {
 	_, err := s.Rooms.FindRoomByName(pconn.RoomName)
 	if err != rooms.ErrRoomNotFound {
 		log.Printf("error while creating room: %v", rooms.ErrRoomIsExist)
@@ -39,7 +39,7 @@ func (s *Server) CreateRoom(ctx context.Context, pconn *pb.CreateRoomMessage) (*
 	}, nil
 }
 
-func (s *Server) CreateStream(pconn *pb.Connect, stream pb.Broadcast_CreateStreamServer) error {
+func (s *Server) CreateStream(pconn *pb.Connect, stream pb.ChatRooms_CreateStreamServer) error {
 	err := s.Rooms.CreateConnection(pconn, stream)
 	if err != nil {
 		log.Printf("Error while creating stream: %v\n", err)
@@ -49,8 +49,8 @@ func (s *Server) CreateStream(pconn *pb.Connect, stream pb.Broadcast_CreateStrea
 	return nil
 }
 
-func (s *Server) BroadcastMessage(ctx context.Context, msg *pb.Message) (*pb.Close, error) {
-	return s.Rooms.BroadcastMessage(ctx, msg)
+func (s *Server) BroadcastRoomMessage(ctx context.Context, msg *pb.Message) (*pb.Close, error) {
+	return s.Rooms.BroadcastRoomMessage(ctx, msg)
 }
 
 func (s *Server) GetAllRooms(ctx context.Context, epmty *pb.Empty) (*pb.ListRoom, error) {
