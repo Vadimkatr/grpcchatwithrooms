@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package proto;
+
+message User {
+  string id = 1;
+  string name = 2;
+}
+
+message Message {
+    string userName = 1;
+    string userId = 2;
+    string roomName = 3;
+    string roomId = 4;
+    string content = 5;
+    string timestamp = 6;
+}
+
+message Room {
+    string id = 1;
+    string name = 2;
+}
+
+message ConnectToRoomMessage {
+    string roomName = 1;
+}
+
+message CreateRoomMessage {
+    User user = 1;
+    string roomName = 2;
+}
+
+message Connect {
+    User user = 1;
+    string roomName = 3;
+    bool active = 4;
+}
+
+message Close {}
+
+message ListRoom {
+    repeated Room rooms = 1;
+}
+
+message Empty {
+
+}
+
+service Broadcast {
+    rpc CreateStream(Connect) returns (stream Message);
+    rpc CreateRoom(CreateRoomMessage) returns (Room);
+    rpc BroadcastMessage(Message) returns (Close);
+    rpc GetAllRooms(Empty) returns (ListRoom);
+}

@@ -1,7 +1,26 @@
 package main
 
-import "fmt"
+import (
+	"log"
+	"net"
+
+	"google.golang.org/grpc"
+
+	"github.com/Vadimkatr/grpcchatwithrooms/internal/apiserver/server"
+	pb "github.com/Vadimkatr/grpcchatwithrooms/internal/proto"
+)
 
 func main() {
-	fmt.Println("Server main")
+
+	srv, _ := server.InitServer()
+
+	grpcServer := grpc.NewServer()
+	listener, err := net.Listen("tcp", ":8080")
+	if err != nil {
+		log.Fatalf("error creating the server %v", err)
+	}
+
+	log.Println("Starting server at port :8080")
+	pb.RegisterBroadcastServer(grpcServer, srv)
+	grpcServer.Serve(listener)
 }
