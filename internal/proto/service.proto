@@ -19,9 +19,10 @@ message Message {
 message Room {
     string id = 1;
     string name = 2;
+    string creatorId = 3; // id user who create this room
 }
 
-message CreateRoom {
+message CreateOrDelRoom {
     User user = 1;
     string roomName = 2;
 }
@@ -43,8 +44,9 @@ message Empty {
 }
 
 service ChatRooms {
-    rpc CreateStream(Connect) returns (stream Message);
-    rpc CreateNewRoom(CreateRoom) returns (Room);
     rpc BroadcastRoomMessage(Message) returns (Close);
+    rpc CreateNewRoom(CreateOrDelRoom) returns (Room);
+    rpc CreateStream(Connect) returns (stream Message);
+    rpc DeleteRoom(CreateOrDelRoom) returns (Empty);
     rpc GetAllRooms(Empty) returns (ListRoom);
 }

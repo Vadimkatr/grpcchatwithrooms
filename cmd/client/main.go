@@ -28,7 +28,7 @@ func main() {
 	timestamp := time.Now()
 	done := make(chan int)
 
-	name := flag.String("N", "Zxxz", "The name of the user")
+	name := flag.String("N", fmt.Sprintf("NoName%d", time.Now().Unix()), "The name of the user")
 	flag.Parse()
 
 	id := sha256.Sum256([]byte(timestamp.String() + *name))
@@ -47,7 +47,7 @@ func main() {
 	for {
 		menu := fmt.Sprintf("\nMenu:\n" +
 			"1) Create room;\n" +
-			"2) List rooms;\n" +
+			"2) List room;\n" +
 			"3) Connect to existing rooom;\n" +
 			"4) Delete room;\n" +
 			"5) Exit\n")
@@ -129,7 +129,7 @@ func main() {
 				<-done
 			}
 		case "4":
-			deleteRoom()
+			deleteRoom(user)
 		case "5":
 			{
 				fmt.Printf("Bye bye...")
@@ -155,9 +155,10 @@ func createRoom(user *pb.User) (string, error) {
 	}
 	roomName = roomName[:len(roomName)-1]
 
-	rm, err := client.CreateNewRoom(context.Background(), &pb.CreateRoom{
+	rm, err := client.CreateNewRoom(context.Background(), &pb.CreateOrDelRoom{
 		User:     user,
 		RoomName: roomName,
+
 	})
 	if err != nil {
 		return "", err
@@ -213,6 +214,28 @@ func connectToRoom(user *pb.User, roomName string) error {
 	return streamerror
 }
 
-func deleteRoom() {
-	// TODO:
+func deleteRoom(user *pb.User) error {
+	fmt.Println("Enter room name to delete:")
+	reader := bufio.NewReader(os.Stdin)
+	roomName, err := reader.ReadString('\n')
+	if err != nil {
+		if err == io.EOF { // when user type Ctrl+D to get EOF
+			return err
+		} else {
+			log.Fatal(err) // something went wrong
+			return err
+		}
+	}
+	roomName = roomName[:len(roomName)-1]
+
+	_, err = client.DeleteRoom(context.Background(), &pb.CreateOrDelRoom{
+		User:     user,
+		RoomName: roomName,
+
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -1,4 +1,4 @@
-package rooms
+package room
 
 import (
 	"errors"
@@ -11,4 +11,5 @@ var (
 var (
 	ErrUserNotFound = errors.New("user not found")
 	ErrRoomNotFound = errors.New("room not found")
+	ErrDelRoomPermissionDen = errors.New("permission denied")
 )

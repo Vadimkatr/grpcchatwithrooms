@@ -1,4 +1,4 @@
-package rooms
+package room
 
 import (
 	"context"
@@ -62,7 +62,7 @@ func (rms *Rooms) FindRoomByName(name string) (*Room, error) {
 	return nil, ErrRoomNotFound
 }
 
-func (rms *Rooms) CreateRoom(name string) (*Room, error) {
+func (rms *Rooms) CreateRoom(name, creatorId string) (*Room, error) {
 	timestamp := time.Now()
 	id := sha256.Sum256([]byte(timestamp.String() + name))
 
@@ -70,10 +70,30 @@ func (rms *Rooms) CreateRoom(name string) (*Room, error) {
 		Connections: nil,
 		Id:          hex.EncodeToString(id[:]),
 		Name:        name,
+		CreatorId:   creatorId,
 	}
 
 	rms.rooms = append(rms.rooms, rm)
 	return rm, nil
+}
+
+func (rms *Rooms) DeleteRoom(roomName, creatorId string) error {
+	for i, rm := range rms.rooms {
+		if rm.Name == roomName {
+			if rm.CreatorId == creatorId {
+				rms.rooms = append(rms.rooms[:i], rms.rooms[i+1:]...)
+				log.Printf("delete room: %s", roomName)
+				return nil
+			}
+			err := ErrDelRoomPermissionDen
+			log.Printf("error while deleting room: %v", err)
+			return err
+		}
+	}
+
+	err := ErrRoomNotFound
+	log.Printf("error while deleting room: %v", err)
+	return err
 }
 
 func (rms *Rooms) BroadcastRoomMessage(ctx context.Context, msg *pb.Message) (*pb.Close, error) {

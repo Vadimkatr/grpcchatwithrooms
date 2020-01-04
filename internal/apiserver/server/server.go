@@ -4,28 +4,28 @@ import (
 	"context"
 	"log"
 
-	"github.com/Vadimkatr/grpcchatwithrooms/internal/apiserver/rooms"
+	"github.com/Vadimkatr/grpcchatwithrooms/internal/apiserver/room"
 	pb "github.com/Vadimkatr/grpcchatwithrooms/internal/proto"
 )
 
 type Server struct {
-	Rooms *rooms.Rooms
+	Rooms *room.Rooms
 }
 
 func InitServer() (*Server, error) {
 	return &Server{
-		Rooms: rooms.InitRooms(),
+		Rooms: room.InitRooms(),
 	}, nil
 }
 
-func (s *Server) CreateNewRoom(ctx context.Context, pconn *pb.CreateRoom) (*pb.Room, error) {
+func (s *Server) CreateNewRoom(ctx context.Context, pconn *pb.CreateOrDelRoom) (*pb.Room, error) {
 	_, err := s.Rooms.FindRoomByName(pconn.RoomName)
-	if err != rooms.ErrRoomNotFound {
-		log.Printf("error while creating room: %v", rooms.ErrRoomIsExist)
-		return &pb.Room{}, rooms.ErrRoomIsExist
+	if err != room.ErrRoomNotFound {
+		log.Printf("error while creating room: %v", room.ErrRoomIsExist)
+		return &pb.Room{}, room.ErrRoomIsExist
 	}
 
-	rm, err := s.Rooms.CreateRoom(pconn.RoomName)
+	rm, err := s.Rooms.CreateRoom(pconn.RoomName, pconn.User.Id)
 	if err != nil {
 		log.Printf("error while creating room: %v", err)
 		return &pb.Room{}, err
@@ -34,8 +34,9 @@ func (s *Server) CreateNewRoom(ctx context.Context, pconn *pb.CreateRoom) (*pb.R
 	log.Printf("Create new room: %v", rm)
 
 	return &pb.Room{
-		Id:   rm.Id,
-		Name: rm.Name,
+		Id:        rm.Id,
+		Name:      rm.Name,
+		CreatorId: pconn.User.Id,
 	}, nil
 }
 
@@ -47,6 +48,10 @@ func (s *Server) CreateStream(pconn *pb.Connect, stream pb.ChatRooms_CreateStrea
 	}
 
 	return nil
+}
+
+func (s *Server) DeleteRoom(ctx context.Context, pconn *pb.CreateOrDelRoom) (*pb.Empty, error) {
+	return &pb.Empty{}, s.Rooms.DeleteRoom(pconn.RoomName, pconn.User.Id)
 }
 
 func (s *Server) BroadcastRoomMessage(ctx context.Context, msg *pb.Message) (*pb.Close, error) {

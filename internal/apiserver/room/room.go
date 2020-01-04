@@ -1,4 +1,4 @@
-package rooms
+package room
 
 import (
 	"context"
@@ -24,6 +24,7 @@ type Room struct {
 	Connections []*Connection
 	Id          string
 	Name        string
+	CreatorId   string
 }
 
 func (rm *Room) BroadcastMessageToRoom(ctx context.Context, msg *pb.Message) (*pb.Close, error) {

@@ -153,6 +153,7 @@ func (m *Message) GetTimestamp() string {
 type Room struct {
 	Id                   string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name                 string   `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	CreatorId            string   `protobuf:"bytes,3,opt,name=creatorId,proto3" json:"creatorId,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -197,7 +198,14 @@ func (m *Room) GetName() string {
 	return ""
 }
 
-type CreateRoom struct {
+func (m *Room) GetCreatorId() string {
+	if m != nil {
+		return m.CreatorId
+	}
+	return ""
+}
+
+type CreateOrDelRoom struct {
 	User                 *User    `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 	RoomName             string   `protobuf:"bytes,2,opt,name=roomName,proto3" json:"roomName,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -205,39 +213,39 @@ type CreateRoom struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *CreateRoom) Reset()         { *m = CreateRoom{} }
-func (m *CreateRoom) String() string { return proto.CompactTextString(m) }
-func (*CreateRoom) ProtoMessage()    {}
-func (*CreateRoom) Descriptor() ([]byte, []int) {
+func (m *CreateOrDelRoom) Reset()         { *m = CreateOrDelRoom{} }
+func (m *CreateOrDelRoom) String() string { return proto.CompactTextString(m) }
+func (*CreateOrDelRoom) ProtoMessage()    {}
+func (*CreateOrDelRoom) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3474577474948ca0, []int{3}
 }
 
-func (m *CreateRoom) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateRoom.Unmarshal(m, b)
+func (m *CreateOrDelRoom) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateOrDelRoom.Unmarshal(m, b)
 }
-func (m *CreateRoom) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateRoom.Marshal(b, m, deterministic)
+func (m *CreateOrDelRoom) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateOrDelRoom.Marshal(b, m, deterministic)
 }
-func (m *CreateRoom) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateRoom.Merge(m, src)
+func (m *CreateOrDelRoom) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateOrDelRoom.Merge(m, src)
 }
-func (m *CreateRoom) XXX_Size() int {
-	return xxx_messageInfo_CreateRoom.Size(m)
+func (m *CreateOrDelRoom) XXX_Size() int {
+	return xxx_messageInfo_CreateOrDelRoom.Size(m)
 }
-func (m *CreateRoom) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateRoom.DiscardUnknown(m)
+func (m *CreateOrDelRoom) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateOrDelRoom.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CreateRoom proto.InternalMessageInfo
+var xxx_messageInfo_CreateOrDelRoom proto.InternalMessageInfo
 
-func (m *CreateRoom) GetUser() *User {
+func (m *CreateOrDelRoom) GetUser() *User {
 	if m != nil {
 		return m.User
 	}
 	return nil
 }
 
-func (m *CreateRoom) GetRoomName() string {
+func (m *CreateOrDelRoom) GetRoomName() string {
 	if m != nil {
 		return m.RoomName
 	}
@@ -404,7 +412,7 @@ func init() {
 	proto.RegisterType((*User)(nil), "proto.User")
 	proto.RegisterType((*Message)(nil), "proto.Message")
 	proto.RegisterType((*Room)(nil), "proto.Room")
-	proto.RegisterType((*CreateRoom)(nil), "proto.CreateRoom")
+	proto.RegisterType((*CreateOrDelRoom)(nil), "proto.CreateOrDelRoom")
 	proto.RegisterType((*Connect)(nil), "proto.Connect")
 	proto.RegisterType((*Close)(nil), "proto.Close")
 	proto.RegisterType((*ListRoom)(nil), "proto.ListRoom")
@@ -414,31 +422,33 @@ func init() {
 func init() { proto.RegisterFile("internal/proto/service.proto", fileDescriptor_3474577474948ca0) }
 
 var fileDescriptor_3474577474948ca0 = []byte{
-	// 383 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x92, 0xcd, 0x6a, 0xe3, 0x30,
-	0x14, 0x85, 0xb1, 0xe3, 0x9f, 0xe4, 0x26, 0x93, 0x61, 0xc4, 0x10, 0x8c, 0x09, 0x4c, 0xc6, 0xab,
-	0x61, 0x68, 0x93, 0x90, 0xf6, 0x05, 0x5a, 0x53, 0x4a, 0xa0, 0xcd, 0xc2, 0xa5, 0xdb, 0x82, 0x6a,
-	0x5f, 0x5a, 0x83, 0x6d, 0x05, 0x49, 0x4d, 0xe9, 0x23, 0xf5, 0x75, 0xfa, 0x44, 0x45, 0x92, 0x95,
-	0xbf, 0x55, 0xbb, 0x8a, 0x8e, 0x0e, 0xdf, 0xd5, 0x39, 0x37, 0x86, 0x71, 0xd9, 0x48, 0xe4, 0x0d,
-	0xad, 0x66, 0x6b, 0xce, 0x24, 0x9b, 0x09, 0xe4, 0x9b, 0x32, 0xc7, 0xa9, 0x56, 0xc4, 0xd7, 0x3f,
-	0xc9, 0x7f, 0xf0, 0xee, 0x05, 0x72, 0x32, 0x04, 0xb7, 0x2c, 0x22, 0x67, 0xe2, 0xfc, 0xeb, 0x65,
-	0x6e, 0x59, 0x10, 0x02, 0x5e, 0x43, 0x6b, 0x8c, 0x5c, 0x7d, 0xa3, 0xcf, 0xc9, 0xbb, 0x03, 0xe1,
-	0x2d, 0x0a, 0x41, 0x9f, 0x90, 0x8c, 0x20, 0x78, 0x11, 0xc8, 0x97, 0x96, 0x69, 0x15, 0x89, 0xa1,
-	0xab, 0x4e, 0xab, 0x1d, 0xbb, 0xd5, 0x8a, 0xe1, 0x8c, 0xd5, 0xcb, 0x22, 0xea, 0x18, 0xc6, 0x28,
-	0xc5, 0xa8, 0x93, 0x66, 0x3c, 0xc3, 0x58, 0x4d, 0x22, 0x08, 0x73, 0xd6, 0x48, 0x6c, 0x64, 0xe4,
-	0x6b, 0xcb, 0x4a, 0x32, 0x86, 0x9e, 0x2c, 0x6b, 0x14, 0x92, 0xd6, 0xeb, 0x28, 0xd0, 0xde, 0xee,
-	0x42, 0xf5, 0xca, 0x18, 0xab, 0xbf, 0xd4, 0x6b, 0x09, 0x90, 0x72, 0xa4, 0x12, 0x35, 0xf1, 0x07,
-	0x3c, 0x95, 0x58, 0x33, 0xfd, 0x45, 0xdf, 0xac, 0x6b, 0xaa, 0x96, 0x94, 0x69, 0xe3, 0x20, 0xae,
-	0x7b, 0x18, 0x37, 0x79, 0x80, 0x30, 0x65, 0x4d, 0x83, 0xb9, 0xfc, 0xde, 0x9c, 0xce, 0x51, 0xed,
-	0x11, 0x04, 0x34, 0x97, 0xe5, 0xc6, 0x2c, 0xa4, 0x9b, 0xb5, 0x2a, 0x09, 0xc1, 0x4f, 0x2b, 0x26,
-	0x30, 0x39, 0x85, 0xee, 0x4d, 0x29, 0xa4, 0x4e, 0xfc, 0x17, 0x7c, 0x05, 0x8a, 0xc8, 0x99, 0x74,
-	0xf6, 0x9e, 0x52, 0x5e, 0x66, 0x1c, 0xc5, 0x5d, 0xd5, 0x6b, 0xf9, 0xb6, 0xf8, 0x70, 0xa0, 0x97,
-	0x3e, 0x53, 0x0d, 0x0a, 0x32, 0x87, 0x81, 0x69, 0x7e, 0x27, 0x39, 0xd2, 0x9a, 0x0c, 0x5b, 0xb4,
-	0xed, 0x10, 0x5b, 0xdd, 0xfe, 0xeb, 0x73, 0x87, 0xcc, 0xe0, 0x87, 0x21, 0x56, 0xf8, 0xaa, 0x1f,
-	0xff, 0x65, 0x91, 0xed, 0x06, 0xe3, 0xfd, 0x00, 0xe4, 0x1c, 0x7e, 0x5f, 0x72, 0x46, 0x8b, 0x9c,
-	0x9a, 0xb4, 0xf6, 0x03, 0x3a, 0x1a, 0x1d, 0x0f, 0xec, 0x1c, 0x55, 0x8f, 0x9c, 0x40, 0xff, 0x1a,
-	0xe5, 0x45, 0x55, 0x99, 0x9c, 0xd6, 0xd4, 0x1d, 0xe2, 0x9f, 0xad, 0xb2, 0x0b, 0x78, 0x0c, 0xb4,
-	0x3e, 0xfb, 0x0c, 0x00, 0x00, 0xff, 0xff, 0xa0, 0x1d, 0xe6, 0x3c, 0xf2, 0x02, 0x00, 0x00,
+	// 407 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x92, 0xdd, 0x0a, 0xd3, 0x40,
+	0x10, 0x85, 0x49, 0x9a, 0x9f, 0x76, 0x5a, 0x5b, 0x58, 0xa4, 0x84, 0x50, 0xb0, 0xe6, 0x4a, 0x44,
+	0xdb, 0x52, 0xfb, 0x02, 0x9a, 0x8a, 0x16, 0xb4, 0x42, 0xc4, 0x5b, 0x61, 0x4d, 0x06, 0x0d, 0x24,
+	0xd9, 0xb2, 0xbb, 0x56, 0x7c, 0x06, 0x9f, 0xc4, 0xb7, 0x94, 0x9d, 0x4d, 0xda, 0xa6, 0x17, 0xa2,
+	0x57, 0xd9, 0x6f, 0x0e, 0x67, 0x7e, 0x0e, 0x81, 0x45, 0xd9, 0x68, 0x94, 0x0d, 0xaf, 0xd6, 0x27,
+	0x29, 0xb4, 0x58, 0x2b, 0x94, 0xe7, 0x32, 0xc7, 0x15, 0x11, 0xf3, 0xe9, 0x93, 0x3c, 0x05, 0xef,
+	0x93, 0x42, 0xc9, 0xa6, 0xe0, 0x96, 0x45, 0xe4, 0x2c, 0x9d, 0x27, 0xa3, 0xcc, 0x2d, 0x0b, 0xc6,
+	0xc0, 0x6b, 0x78, 0x8d, 0x91, 0x4b, 0x15, 0x7a, 0x27, 0xbf, 0x1d, 0x08, 0xdf, 0xa3, 0x52, 0xfc,
+	0x2b, 0xb2, 0x39, 0x04, 0xdf, 0x15, 0xca, 0x43, 0xe7, 0x69, 0x89, 0xc5, 0x30, 0x34, 0xaf, 0xe3,
+	0xd5, 0x7b, 0x61, 0xe3, 0x91, 0x42, 0xd4, 0x87, 0x22, 0x1a, 0x58, 0x8f, 0x25, 0xe3, 0x31, 0x2f,
+	0xf2, 0x78, 0xd6, 0xd3, 0x31, 0x8b, 0x20, 0xcc, 0x45, 0xa3, 0xb1, 0xd1, 0x91, 0x4f, 0x52, 0x87,
+	0x6c, 0x01, 0x23, 0x5d, 0xd6, 0xa8, 0x34, 0xaf, 0x4f, 0x51, 0x40, 0xda, 0xb5, 0x90, 0xbc, 0x05,
+	0x2f, 0x13, 0xa2, 0xfe, 0x97, 0xbb, 0x4c, 0xa7, 0x5c, 0x22, 0xd7, 0x42, 0x5e, 0x56, 0xbb, 0x16,
+	0x92, 0x23, 0xcc, 0x52, 0x03, 0xf8, 0x41, 0xee, 0xb1, 0xa2, 0xa6, 0x8f, 0xc0, 0x33, 0x47, 0x51,
+	0xdb, 0xf1, 0x76, 0x6c, 0x13, 0x5d, 0x99, 0x1c, 0x33, 0x12, 0x7a, 0x17, 0xb9, 0xfd, 0x8b, 0x92,
+	0xcf, 0x10, 0xa6, 0xa2, 0x69, 0x30, 0xd7, 0xff, 0xd7, 0x67, 0x70, 0x97, 0xcc, 0x1c, 0x02, 0x9e,
+	0xeb, 0xf2, 0x6c, 0x33, 0x1b, 0x66, 0x2d, 0x25, 0x21, 0xf8, 0x69, 0x25, 0x14, 0x26, 0xcf, 0x61,
+	0xf8, 0xae, 0x54, 0x9a, 0x36, 0x7e, 0x0c, 0xbe, 0x31, 0xaa, 0xc8, 0x59, 0x0e, 0x6e, 0x46, 0x19,
+	0x2d, 0xb3, 0x8a, 0xf1, 0xbd, 0xae, 0x4f, 0xfa, 0xe7, 0xf6, 0x97, 0x0b, 0xa3, 0xf4, 0x1b, 0x27,
+	0xa3, 0x62, 0x3b, 0x78, 0xf8, 0x4a, 0x0a, 0x5e, 0xe4, 0xdc, 0xb6, 0xea, 0x7e, 0x80, 0x69, 0xdb,
+	0xa2, 0xe5, 0x78, 0xd2, 0x32, 0xcd, 0x66, 0x3b, 0x78, 0x60, 0x43, 0x3b, 0xe2, 0x0f, 0x5a, 0x60,
+	0xde, 0xc9, 0xfd, 0x28, 0xe3, 0xdb, 0x4d, 0xd8, 0x06, 0x26, 0x56, 0xff, 0xa8, 0x25, 0xf2, 0xfa,
+	0x32, 0xa3, 0xcd, 0x2b, 0xbe, 0x9b, 0xb9, 0x71, 0xd8, 0x16, 0x60, 0x8f, 0x15, 0x6a, 0xfc, 0xeb,
+	0x90, 0x6e, 0x37, 0xba, 0x8f, 0x3d, 0x83, 0xf1, 0x1b, 0xd4, 0x2f, 0xab, 0xca, 0x1e, 0xd8, 0x13,
+	0xe3, 0x59, 0x4b, 0x5d, 0x72, 0x5f, 0x02, 0xe2, 0x17, 0x7f, 0x02, 0x00, 0x00, 0xff, 0xff, 0x32,
+	0x81, 0x1e, 0xc4, 0x4e, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -453,9 +463,10 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ChatRoomsClient interface {
-	CreateStream(ctx context.Context, in *Connect, opts ...grpc.CallOption) (ChatRooms_CreateStreamClient, error)
-	CreateNewRoom(ctx context.Context, in *CreateRoom, opts ...grpc.CallOption) (*Room, error)
 	BroadcastRoomMessage(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Close, error)
+	CreateNewRoom(ctx context.Context, in *CreateOrDelRoom, opts ...grpc.CallOption) (*Room, error)
+	CreateStream(ctx context.Context, in *Connect, opts ...grpc.CallOption) (ChatRooms_CreateStreamClient, error)
+	DeleteRoom(ctx context.Context, in *CreateOrDelRoom, opts ...grpc.CallOption) (*Empty, error)
 	GetAllRooms(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListRoom, error)
 }
 
@@ -465,6 +476,24 @@ type chatRoomsClient struct {
 
 func NewChatRoomsClient(cc *grpc.ClientConn) ChatRoomsClient {
 	return &chatRoomsClient{cc}
+}
+
+func (c *chatRoomsClient) BroadcastRoomMessage(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Close, error) {
+	out := new(Close)
+	err := c.cc.Invoke(ctx, "/proto.ChatRooms/BroadcastRoomMessage", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatRoomsClient) CreateNewRoom(ctx context.Context, in *CreateOrDelRoom, opts ...grpc.CallOption) (*Room, error) {
+	out := new(Room)
+	err := c.cc.Invoke(ctx, "/proto.ChatRooms/CreateNewRoom", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *chatRoomsClient) CreateStream(ctx context.Context, in *Connect, opts ...grpc.CallOption) (ChatRooms_CreateStreamClient, error) {
@@ -499,18 +528,9 @@ func (x *chatRoomsCreateStreamClient) Recv() (*Message, error) {
 	return m, nil
 }
 
-func (c *chatRoomsClient) CreateNewRoom(ctx context.Context, in *CreateRoom, opts ...grpc.CallOption) (*Room, error) {
-	out := new(Room)
-	err := c.cc.Invoke(ctx, "/proto.ChatRooms/CreateNewRoom", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *chatRoomsClient) BroadcastRoomMessage(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Close, error) {
-	out := new(Close)
-	err := c.cc.Invoke(ctx, "/proto.ChatRooms/BroadcastRoomMessage", in, out, opts...)
+func (c *chatRoomsClient) DeleteRoom(ctx context.Context, in *CreateOrDelRoom, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, "/proto.ChatRooms/DeleteRoom", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -528,9 +548,10 @@ func (c *chatRoomsClient) GetAllRooms(ctx context.Context, in *Empty, opts ...gr
 
 // ChatRoomsServer is the server API for ChatRooms service.
 type ChatRoomsServer interface {
-	CreateStream(*Connect, ChatRooms_CreateStreamServer) error
-	CreateNewRoom(context.Context, *CreateRoom) (*Room, error)
 	BroadcastRoomMessage(context.Context, *Message) (*Close, error)
+	CreateNewRoom(context.Context, *CreateOrDelRoom) (*Room, error)
+	CreateStream(*Connect, ChatRooms_CreateStreamServer) error
+	DeleteRoom(context.Context, *CreateOrDelRoom) (*Empty, error)
 	GetAllRooms(context.Context, *Empty) (*ListRoom, error)
 }
 
@@ -538,14 +559,17 @@ type ChatRoomsServer interface {
 type UnimplementedChatRoomsServer struct {
 }
 
+func (*UnimplementedChatRoomsServer) BroadcastRoomMessage(ctx context.Context, req *Message) (*Close, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BroadcastRoomMessage not implemented")
+}
+func (*UnimplementedChatRoomsServer) CreateNewRoom(ctx context.Context, req *CreateOrDelRoom) (*Room, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateNewRoom not implemented")
+}
 func (*UnimplementedChatRoomsServer) CreateStream(req *Connect, srv ChatRooms_CreateStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method CreateStream not implemented")
 }
-func (*UnimplementedChatRoomsServer) CreateNewRoom(ctx context.Context, req *CreateRoom) (*Room, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateNewRoom not implemented")
-}
-func (*UnimplementedChatRoomsServer) BroadcastRoomMessage(ctx context.Context, req *Message) (*Close, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BroadcastRoomMessage not implemented")
+func (*UnimplementedChatRoomsServer) DeleteRoom(ctx context.Context, req *CreateOrDelRoom) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRoom not implemented")
 }
 func (*UnimplementedChatRoomsServer) GetAllRooms(ctx context.Context, req *Empty) (*ListRoom, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllRooms not implemented")
@@ -553,6 +577,42 @@ func (*UnimplementedChatRoomsServer) GetAllRooms(ctx context.Context, req *Empty
 
 func RegisterChatRoomsServer(s *grpc.Server, srv ChatRoomsServer) {
 	s.RegisterService(&_ChatRooms_serviceDesc, srv)
+}
+
+func _ChatRooms_BroadcastRoomMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Message)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatRoomsServer).BroadcastRoomMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.ChatRooms/BroadcastRoomMessage",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatRoomsServer).BroadcastRoomMessage(ctx, req.(*Message))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatRooms_CreateNewRoom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateOrDelRoom)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatRoomsServer).CreateNewRoom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.ChatRooms/CreateNewRoom",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatRoomsServer).CreateNewRoom(ctx, req.(*CreateOrDelRoom))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _ChatRooms_CreateStream_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -576,38 +636,20 @@ func (x *chatRoomsCreateStreamServer) Send(m *Message) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _ChatRooms_CreateNewRoom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateRoom)
+func _ChatRooms_DeleteRoom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateOrDelRoom)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ChatRoomsServer).CreateNewRoom(ctx, in)
+		return srv.(ChatRoomsServer).DeleteRoom(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.ChatRooms/CreateNewRoom",
+		FullMethod: "/proto.ChatRooms/DeleteRoom",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatRoomsServer).CreateNewRoom(ctx, req.(*CreateRoom))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ChatRooms_BroadcastRoomMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Message)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ChatRoomsServer).BroadcastRoomMessage(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/proto.ChatRooms/BroadcastRoomMessage",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatRoomsServer).BroadcastRoomMessage(ctx, req.(*Message))
+		return srv.(ChatRoomsServer).DeleteRoom(ctx, req.(*CreateOrDelRoom))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -635,12 +677,16 @@ var _ChatRooms_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*ChatRoomsServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "BroadcastRoomMessage",
+			Handler:    _ChatRooms_BroadcastRoomMessage_Handler,
+		},
+		{
 			MethodName: "CreateNewRoom",
 			Handler:    _ChatRooms_CreateNewRoom_Handler,
 		},
 		{
-			MethodName: "BroadcastRoomMessage",
-			Handler:    _ChatRooms_BroadcastRoomMessage_Handler,
+			MethodName: "DeleteRoom",
+			Handler:    _ChatRooms_DeleteRoom_Handler,
 		},
 		{
 			MethodName: "GetAllRooms",
