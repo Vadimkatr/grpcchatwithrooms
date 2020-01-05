@@ -33,21 +33,17 @@ message Connect {
     bool active = 4;
 }
 
-message Close {}
-
 message ListRoom {
     repeated Room rooms = 1;
 }
 
-message Empty {
-
-}
+message Empty {}
 
 service ChatRooms {
-    rpc BroadcastRoomMessage(Message) returns (Close);
+    rpc BroadcastRoomMessage(Message) returns (Empty);
+    rpc CloseStream(Connect) returns (Empty);
     rpc CreateNewRoom(CreateOrDelRoom) returns (Room);
     rpc CreateStream(Connect) returns (stream Message);
-    rpc CloseStream(Connect) returns (Close);
     rpc DeleteRoom(CreateOrDelRoom) returns (Empty);
     rpc GetAllRooms(Empty) returns (ListRoom);
 }

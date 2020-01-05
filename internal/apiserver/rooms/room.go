@@ -1,11 +1,10 @@
-package room
+package rooms
 
 import (
-	"context"
 	"log"
+	"sync"
 
 	pb "github.com/Vadimkatr/grpcchatwithrooms/internal/proto"
-	"sync"
 )
 
 type User struct {
@@ -15,9 +14,9 @@ type User struct {
 
 type Connection struct {
 	stream pb.ChatRooms_CreateStreamServer
-	user   *User
 	active bool
-	error  chan error
+	user   *User
+	Error  chan error
 }
 
 type Room struct {
@@ -27,7 +26,7 @@ type Room struct {
 	CreatorId   string
 }
 
-func (rm *Room) BroadcastMessageToRoom(ctx context.Context, msg *pb.Message) (*pb.Close, error) {
+func (rm *Room) BroadcastMessageToRoom(msg *pb.Message) error {
 	wait := sync.WaitGroup{}
 	done := make(chan int)
 
@@ -39,12 +38,13 @@ func (rm *Room) BroadcastMessageToRoom(ctx context.Context, msg *pb.Message) (*p
 
 			if conn.active {
 				err := conn.stream.Send(msg)
-				log.Println("Sending message to: ", conn.stream)
+				log.Printf("Room %s: user %s sending message to stream: %v.\n",
+					msg.RoomName, msg.UserName, conn.stream)
 
 				if err != nil {
 					log.Printf("Error with Stream: %v - Error: %v\n", conn.stream, err)
 					conn.active = false
-					conn.error <- err
+					conn.Error <- err
 				}
 			}
 		}(msg, conn)
@@ -56,5 +56,5 @@ func (rm *Room) BroadcastMessageToRoom(ctx context.Context, msg *pb.Message) (*p
 	}()
 
 	<-done
-	return &pb.Close{}, nil
+	return nil
 }
