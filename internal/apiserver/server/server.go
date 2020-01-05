@@ -50,6 +50,10 @@ func (s *Server) CreateStream(pconn *pb.Connect, stream pb.ChatRooms_CreateStrea
 	return nil
 }
 
+func (s *Server) CloseStream(ctx context.Context, pconn *pb.Connect) (*pb.Close, error) {
+	return s.Rooms.CloseConnection(pconn)
+}
+
 func (s *Server) DeleteRoom(ctx context.Context, pconn *pb.CreateOrDelRoom) (*pb.Empty, error) {
 	return &pb.Empty{}, s.Rooms.DeleteRoom(pconn.RoomName, pconn.User.Id)
 }

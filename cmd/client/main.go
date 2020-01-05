@@ -26,7 +26,6 @@ func init() {
 
 func main() {
 	timestamp := time.Now()
-	done := make(chan int)
 
 	name := flag.String("N", fmt.Sprintf("NoName%d", time.Now().Unix()), "The name of the user")
 	flag.Parse()
@@ -77,6 +76,8 @@ func main() {
 			getListRooms()
 		case "3":
 			{
+				done := make(chan int)
+
 				fmt.Println("Enter room name to connect:")
 				reader := bufio.NewReader(os.Stdin)
 				roomName, err := reader.ReadString('\n')
@@ -85,7 +86,7 @@ func main() {
 						break
 					} else {
 						log.Fatal(err) // something went wrong
-						break
+						break // TODO: fix
 					}
 				}
 				roomName = roomName[:len(roomName)-1]
@@ -112,13 +113,25 @@ func main() {
 							Timestamp: timestamp.String(),
 						}
 
+						if msg.GetContent() == "/exit" || msg.GetContent() == "/menu" {
+							_, err := client.CloseStream(context.Background(),  &pb.Connect{
+								User:     user,
+								RoomName: roomName,
+								Active:   true,
+							})
+							if err != nil {
+								fmt.Println("Do something:", err)
+							}
+							fmt.Printf("You left room.\n")
+							break
+						}
+
 						_, err := client.BroadcastRoomMessage(context.Background(), msg)
 						if err != nil {
 							fmt.Printf("Error Sending Message: %v", err)
 							break
 						}
 					}
-
 				}()
 
 				go func() {
@@ -185,14 +198,12 @@ func getListRooms() {
 }
 
 func connectToRoom(user *pb.User, roomName string) error {
-	var streamerror error
 	stream, err := client.CreateStream(context.Background(), &pb.Connect{
 		User:     user,
 		RoomName: roomName,
 		Active:   true,
 	})
 	if err != nil {
-		fmt.Printf("connection failed: %v", err)
 		return err
 	}
 
@@ -203,15 +214,17 @@ func connectToRoom(user *pb.User, roomName string) error {
 		for {
 			msg, err := str.Recv()
 			if err != nil {
-				streamerror = fmt.Errorf("Error reading message: %v", err)
-				break
+				if err != io.EOF {
+					fmt.Printf("Error reading message: %v\n", err)
+					break
+				}
 			}
 
 			fmt.Printf("%s: %s\n", msg.GetUserName(), msg.GetContent())
 		}
 	}(stream)
 
-	return streamerror
+	return nil
 }
 
 func deleteRoom(user *pb.User) error {

@@ -47,6 +47,7 @@ service ChatRooms {
     rpc BroadcastRoomMessage(Message) returns (Close);
     rpc CreateNewRoom(CreateOrDelRoom) returns (Room);
     rpc CreateStream(Connect) returns (stream Message);
+    rpc CloseStream(Connect) returns (Close);
     rpc DeleteRoom(CreateOrDelRoom) returns (Empty);
     rpc GetAllRooms(Empty) returns (ListRoom);
 }

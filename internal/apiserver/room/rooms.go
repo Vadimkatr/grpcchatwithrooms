@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"log"
 	"sync"
 	"time"
@@ -42,6 +43,28 @@ func (rms *Rooms) CreateConnection(pconn *pb.Connect, stream pb.ChatRooms_Create
 	return <-conn.error
 }
 
+func (rms *Rooms) CloseConnection(pconn *pb.Connect) (*pb.Close, error) {
+	user := User{
+		Id:   pconn.User.Id,
+		Name: pconn.User.Name,
+	}
+	rm, err := findRoomByName(rms.rooms, pconn.RoomName)
+	if err != nil {
+		return nil, err
+	}
+
+	for i, conn := range rm.Connections {
+		if conn.user.Id == user.Id {
+			conn.error <- nil // send nil to close connection
+			close(conn.error)
+			rm.Connections = append(rm.Connections[:i], rm.Connections[i+1:]...)
+			log.Printf("delete user %s connection\n", user.Name)
+			return &pb.Close{}, nil
+		}
+	}
+
+	return nil, errors.New("error: deleting connection: connection not found")
+}
 func findRoomByName(rooms []*Room, roomName string) (*Room, error) {
 	for _, rm := range rooms {
 		if rm.Name == roomName {
