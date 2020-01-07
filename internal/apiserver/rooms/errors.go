@@ -6,7 +6,7 @@ import (
 
 var (
 	ErrConnNotFound         = errors.New("connection not found")
-	ErrDelRoomPermissionDen = errors.New("permission denied")
-	ErrRoomNotFound         = errors.New("rooms not found")
-	ErrRoomIsExist          = errors.New("rooms is exist")
+	ErrDelRoomPermissionDen = errors.New("permission denied; only user that create room can delete them")
+	ErrRoomNotFound         = errors.New("room not found")
+	ErrRoomIsExist          = errors.New("room is exist")
 )

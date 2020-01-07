@@ -111,8 +111,14 @@ func (rms *Rooms) DeleteRoom(roomName, creatorId string) error {
 		return ErrDelRoomPermissionDen
 	}
 
-	rms.rooms = append(rms.rooms[:index], rms.rooms[index+1:]...)
+	// close all connections in room
+	for _, conn := range rm.Connections {
+		conn.Error <- nil // send nil to close connection
+		close(conn.Error) // close channel
+	}
 
+	// delete this room from all
+	rms.rooms = append(rms.rooms[:index], rms.rooms[index+1:]...)
 	return nil
 }
 

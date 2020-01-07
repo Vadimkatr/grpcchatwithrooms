@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"google.golang.org/grpc/metadata"
 	"log"
 
 	"github.com/Vadimkatr/grpcchatwithrooms/internal/apiserver/rooms"
@@ -21,18 +22,17 @@ func InitServer() (*Server, error) {
 func (s *Server) CreateNewRoom(ctx context.Context, pconn *pb.CreateOrDelRoom) (*pb.Room, error) {
 	_, _, err := s.Rooms.GetRoomByName(pconn.RoomName)
 	if err == nil {
-
-		log.Printf("Error while creating rooms: %v.\n", rooms.ErrRoomIsExist)
+		log.Printf("Error while creating room: %v.\n", rooms.ErrRoomIsExist)
 		return &pb.Room{}, rooms.ErrRoomIsExist
 	}
 
 	rm, err := s.Rooms.CreateRoom(pconn.RoomName, pconn.User.Id)
 	if err != nil {
-		log.Printf("Error while creating rooms: %v.\n", err)
+		log.Printf("Error while creating room: %v.\n", err)
 		return &pb.Room{}, err
 	}
 
-	log.Printf("Create new rooms: %v.\n", rm)
+	log.Printf("Create new room: %v.\n", rm)
 	return &pb.Room{
 		Id:        rm.Id,
 		Name:      rm.Name,
@@ -42,34 +42,48 @@ func (s *Server) CreateNewRoom(ctx context.Context, pconn *pb.CreateOrDelRoom) (
 
 func (s *Server) CreateStream(pconn *pb.Connect, stream pb.ChatRooms_CreateStreamServer) error {
 	conn, err := s.Rooms.CreateStreamConnection(pconn, stream)
+	md := metadata.MD{}
 	if err != nil {
-		log.Printf("Error while creating stream: %v.\n", err)
+		log.Printf("Error while creating stream: user %s can't connect to room %s because err: %v.\n",
+			pconn.User.Name, pconn.RoomName, err)
+		md.Set("error", err.Error())
+		errh := stream.SendHeader(md)
+		if errh != nil {
+			log.Printf("Error sending header: \"%v\"; user %s try's connect to room %s and get error: \"%v\".\n",
+				errh, pconn.User.Name, pconn.RoomName, err)
+		}
 		return err
 	}
 
-	log.Printf("User %s connect to rooms %s.\n", pconn.User.Name, pconn.RoomName)
+	errh := stream.SendHeader(md)
+	if errh != nil {
+		log.Printf("Error sending header: \"%v\"; user %s try's connect to room %s.\n",
+			errh, pconn.User.Name, pconn.RoomName)
+		return errh
+	}
+	log.Printf("User %s connected to rooms %s.\n", pconn.User.Name, pconn.RoomName)
 	return <-conn.Error
 }
 
 func (s *Server) CloseStream(ctx context.Context, pconn *pb.Connect) (*pb.Empty, error) {
 	err := s.Rooms.CloseStreamConnection(pconn)
 	if err != nil {
-		log.Printf("Error while close connection: %v.\n", err)
+		log.Printf("Error while closing connection: %v.\n", err)
 		return &pb.Empty{}, err
 	}
 
-	log.Printf("User %s close own connection.\n", pconn.User.Name)
+	log.Printf("User %s closed own connection.\n", pconn.User.Name)
 	return &pb.Empty{}, nil
 }
 
 func (s *Server) DeleteRoom(ctx context.Context, pconn *pb.CreateOrDelRoom) (*pb.Empty, error) {
 	err := s.Rooms.DeleteRoom(pconn.RoomName, pconn.User.Id)
 	if err != nil {
-		log.Printf("Error while deleting rooms: %v.\n", err)
-		return &pb.Empty{}, nil
+		log.Printf("Error while deleting room: %v.\n", err)
+		return &pb.Empty{}, err
 	}
 
-	log.Printf("User %s delete rooms %s.\n", pconn.User.Name, pconn.RoomName)
+	log.Printf("User %s deleted room %s.\n", pconn.User.Name, pconn.RoomName)
 	return &pb.Empty{}, nil
 }
 
