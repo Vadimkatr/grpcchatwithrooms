@@ -55,8 +55,8 @@ func main() {
 		reader := bufio.NewReader(os.Stdin)
 		text, err := reader.ReadString('\n')
 		if err != nil {
-				fmt.Printf("Error : %v.\n", err) // something went wrong
-				return
+			fmt.Printf("Error : %v.\n", err) // something went wrong
+			return
 		}
 
 		text = text[:len(text)-1]
@@ -120,7 +120,7 @@ func main() {
 							}
 						}
 
-						text = text[:len(text) - 1]
+						text = text[:len(text)-1]
 						msg := &pb.Message{
 							UserName:  user.Name,
 							UserId:    user.Id,
@@ -153,23 +153,24 @@ func main() {
 
 				<-done
 			}
-		case "4": {
-			fmt.Println("Enter room name to delete:")
-			reader := bufio.NewReader(os.Stdin)
-			roomName, err := reader.ReadString('\n')
-			if err != nil {
-				fmt.Printf("Deleting room failed: %v.\n", err) // something went wrong
-				break
-			}
+		case "4":
+			{
+				fmt.Println("Enter room name to delete:")
+				reader := bufio.NewReader(os.Stdin)
+				roomName, err := reader.ReadString('\n')
+				if err != nil {
+					fmt.Printf("Deleting room failed: %v.\n", err) // something went wrong
+					break
+				}
 
-			roomName = roomName[:len(roomName)-1]
-			err = deleteRoom(user, roomName)
-			if err != nil {
-				fmt.Printf("Error while deleting room: %v.\n", err)
-			} else {
-				fmt.Printf("Room deleted.\n")
+				roomName = roomName[:len(roomName)-1]
+				err = deleteRoom(user, roomName)
+				if err != nil {
+					fmt.Printf("Error while deleting room: %v.\n", err)
+				} else {
+					fmt.Printf("Room deleted.\n")
+				}
 			}
-		}
 		case "5":
 			{
 				fmt.Printf("Bye bye...")
@@ -185,7 +186,6 @@ func createRoom(user *pb.User, roomName string) (string, error) {
 	rm, err := client.CreateNewRoom(context.Background(), &pb.CreateOrDelRoom{
 		User:     user,
 		RoomName: roomName,
-
 	})
 	if err != nil {
 		return "", err
@@ -252,7 +252,7 @@ func disconnectFromRoom(user *pb.User, roomName string) error {
 		RoomName: roomName,
 		Active:   false,
 	})
-	
+
 	return err
 }
 
@@ -261,7 +261,6 @@ func deleteRoom(user *pb.User, roomName string) error {
 	_, err := client.DeleteRoom(context.Background(), &pb.CreateOrDelRoom{
 		User:     user,
 		RoomName: roomName,
-
 	})
 	if err != nil {
 		return err
