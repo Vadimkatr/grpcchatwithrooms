@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package proto;
+
+message User {
+  string id = 1;
+  string name = 2;
+}
+
+message Message {
+    string userId = 1;
+    string userName = 2;
+    string roomId = 3;
+    string roomName = 4;
+    string content = 5;
+    string timestamp = 6;
+}
+
+message Room {
+    string id = 1;
+    string name = 2;
+    string creatorId = 3; // id user who create this room
+}
+
+message CreateOrDelRoom {
+    User user = 1;
+    string roomName = 2;
+}
+
+message Connect {
+    User user = 1;
+    string roomName = 3;
+    bool active = 4;
+}
+
+message ListRoom {
+    repeated Room rooms = 1;
+}
+
+message Empty {}
+
+service ChatRooms {
+    rpc BroadcastRoomMessage(Message) returns (Empty);
+    rpc CloseStream(Connect) returns (Empty);
+    rpc CreateNewRoom(CreateOrDelRoom) returns (Room);
+    rpc CreateStream(Connect) returns (stream Message);
+    rpc DeleteRoom(CreateOrDelRoom) returns (Empty);
+    rpc GetAllRooms(Empty) returns (ListRoom);
+}
